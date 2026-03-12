@@ -24,7 +24,7 @@ function searchRecipes(){
         return;
     }
 
-    const apiKey = "d6734e6526054b04bc196746a5ff9a8f"
+    const apiKey = "90ec4731282a44a1892c06b66405ab8b"
     const apiUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(query)}&number=20&addRecipeNutrition=true&apiKey=${apiKey}`;
 
     infoBox.innerHTML = '<p>Searching for recipes...</p>';
@@ -41,7 +41,7 @@ function searchRecipes(){
             data.results.forEach(recipe => {
                 addRecipes(restrictions, recipe);
             })
-            infoBox.textContent = "Recipes found!";
+            infoBox.textContent = "Recipes found! Click on a recipe for more information";
         })
         .catch(error => {
             console.error('Error fetching recipes', error);
@@ -52,7 +52,7 @@ function searchRecipes(){
 function addRecipes(restrictions, recipe){
     const title = recipe.title;
     const image = recipe.image;
-    const diets = recipe.diets
+    const diets = recipe.diets;
     const ingredients = new Set(
         recipe.nutrition.ingredients.map(i => i.name.toLowerCase())
     );
@@ -64,24 +64,28 @@ function addRecipes(restrictions, recipe){
             console.log(recipe);
             const recipeDiv = document.createElement('div');
             recipeDiv.className = 'recipe';
-
             recipeDiv.innerHTML = `
                 <h3>${title}</h3>
                 <img src="${image}" alt="${title}">
                 `;
                 resultsDiv.appendChild(recipeDiv);
                 console.log(recipe);
+
+                 recipeDiv.addEventListener('click', ()=>{
+                infoBox.innerHTML = `<h3>${title}</h3>
+                <img src="${image}" alt="${title}" style="max-width: 100%;">
+                <p><strong>Diets:</strong> ${diets.join(', ') || 'None'}</p>
+                <p><strong>Ingredients:</strong> ${Array.from(ingredients).join(', ')}</p>`;
+                });
+                resultsDiv.appendChild(recipeDiv);
             }
-    else{
-        return;
-    }
+            
 }
 
 function checkIngredientsMatch(foodIngredients){
     if(ingredientList.size != 0){
         for(const ingredient of ingredientList){
             let foundMatch = false;
-            
             for(const foodIngredient of foodIngredients){
                 if(foodIngredient.includes(ingredient)){
                     foundMatch = true;
