@@ -1,0 +1,8 @@
+.ingredientItem{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.deleteButton{
+    margin-left: auto;
+}
