@@ -24,8 +24,7 @@ function searchRecipes(){
         return;
     }
 
-    const apiKey = "90ec4731282a44a1892c06b66405ab8b"
-    const apiUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(query)}&number=20&addRecipeNutrition=true&apiKey=${apiKey}`;
+    const apiUrl = `/recipes?query=${encodeURIComponent(query)}`;;
 
     infoBox.innerHTML = '<p>Searching for recipes...</p>';
 
@@ -37,7 +36,6 @@ function searchRecipes(){
                 infoBox.innerHTML = '<div class = "no results">No recipes found. Try a different search term!</div>';
                 return;
             }
-
             data.results.forEach(recipe => {
                 addRecipes(restrictions, recipe);
             })
@@ -53,6 +51,11 @@ function addRecipes(restrictions, recipe){
     const title = recipe.title;
     const image = recipe.image;
     const diets = recipe.diets;
+
+    if(!recipe.nutrition || !recipe.nutrition.ingredients){
+        console.log(`Missing nutritional data for ${title}`)
+        return;
+    }
     const ingredients = new Set(
         recipe.nutrition.ingredients.map(i => i.name.toLowerCase())
     );
@@ -134,13 +137,23 @@ async function checkIngredientExists(ingredient){
 async function addIngredient(){
     let ingredient = ingredientInput.value.trim().toLowerCase();
     ingredientInput.value = "";
+
+    if(!ingredient){
+        alert("Please enter an ingredient!");
+        return;
+    }
+    if(ingredientList.has(ingredient)){
+        alert("Ingredient already added!");
+        return;
+    }
+    
     const exists = await checkIngredientExists(ingredient);
     if(exists){
         const ingredientItem = document.createElement("div");
-       ingredientItem.className = "ingredientItem";
+        ingredientItem.className = "ingredientItem";
         const ingredientName = document.createElement("p");
         const ingredientDelete = document.createElement("button");
-        ingredientDelete.className = `deleteButton`;
+        ingredientDelete.className = `deleteButton btn btn-sm btn-danger ms-2`;
         ingredientItem.id = `${ingredient}Div`;
         ingredientName.innerHTML = ingredient;
         ingredientDelete.addEventListener('click', () => removeIngredient(ingredient));
@@ -159,6 +172,11 @@ async function addIngredient(){
 
 function removeIngredient(ingredient){
     let ingredientDiv = document.getElementById(`${ingredient}Div`)
-    ingredientDiv.remove();
-    ingredientList.delete(ingredient);
+    if(ingredientDiv){
+        ingredientDiv.remove();
+        ingredientList.delete(ingredient);
+    }
+    else{
+        console.log("Attempted to remove not present ingredient");
+    }
 }

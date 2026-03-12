@@ -1,10 +1,14 @@
 .ingredientItem{
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
 }
-.deleteButton{
-    margin-left: auto;
+.ingredientItem button.deleteButton {
+    padding: 2px 6px; 
+    font-size: 0.75rem;
+    line-height: 1.2;
+    min-width: 0;
 }
 #results{
     display: flex;
