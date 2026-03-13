@@ -1,32 +1,30 @@
-import express from "express";
-import serverless from "serverless-http";
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-dotenv.config();
-const api = express();
-const router = express.Router();
-const API_KEY = process.env.FOOD_API_KEY; // Add your API key in .e
-nv
-router.get("/weather", async (req, res) => {
-    const city = req.query.city;
-    if (!city) return res.status(400).json({ error: "City is required"
-    });
-    try {
-        const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}
-        &appid=${API_KEY}&units=metric`
-        );
-        const data = await response.json();
+const express = require("express");
+const path = require("path");
+const serverless = require("serverless-http");
+const app = express();
+const port = 8000;
 
-        res.json({
-        city: data.name,
-        temperature: data.main.temp,
-        weather: data.weather[0].description,
-        });
-    } 
-    catch (error) {
-    res.status(500).json({ error: "Server error" });
-    }
+app.use(express.static(path.join(__dirname)));
+
+app.get("/recipes", async (req, res) => {
+    const query = req.query.query;
+    const apiKey = "90ec4731282a44a1892c06b66405ab8b";
+    const url = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(query)}&number=20&addRecipeNutrition=true&apiKey=${apiKey}`;
+    
+        try{
+            const response = await fetch(url);
+            const data = await response.json();
+            res.json(data);
+        }
+        catch(error){
+            res.status(500).json({error:"Failed to fetch recipes"});
+        }
 });
-api.use("/api/", router);
-export const handler = serverless(api);
+
+if(require.main === module){
+    app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+    });
+}
+const handler = serverless(app);
+module.exports = {handler};
