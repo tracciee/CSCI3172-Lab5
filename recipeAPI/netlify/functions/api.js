@@ -8,10 +8,18 @@ app.use(express.static(path.join(__dirname)));
 
 app.get("/api/recipes", async (req, res) => {
     const query = req.query.query;
-    const apiKey = "90ec4731282a44a1892c06b66405ab8b";
+
+    if(!query){
+        return res.status(400).json({ error: "Missing search query" });
+    }
+
+    const apiKey = FOOD_API_KEY;
     const url = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(query)}&number=20&addRecipeNutrition=true&apiKey=${apiKey}`;
         try{
             const response = await fetch(url);
+            if(!response.ok){
+                return res.status(response.status).json({error: "Problem with Spoonacular API"});
+            }
             const data = await response.json();
             res.json(data);
         }

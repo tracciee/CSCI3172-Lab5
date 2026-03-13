@@ -23,13 +23,22 @@ function searchRecipes(){
         alert('Please enter a search term');
         return;
     }
+    if(!/^[a-zA-Z\s]+$/.test(query)){
+        alert("Search can only contain letters and spaces");
+        return;
+    }
 
     const apiUrl = `./api/recipes?query=${encodeURIComponent(query)}`;;
 
     infoBox.innerHTML = '<p>Searching for recipes...</p>';
 
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(response => {
+            if(!response.ok){
+                throw new Error("API Request Failure");
+            }
+            return response.json();
+        })
         .then(data => {
             resultsDiv.innerHTML = '';
             if (!data.results || data.results.length ===0){
@@ -71,7 +80,6 @@ function addRecipes(restrictions, recipe){
                 <h3>${title}</h3>
                 <img src="${image}" alt="${title}">
                 `;
-                resultsDiv.appendChild(recipeDiv);
                 console.log(recipe);
 
                  recipeDiv.addEventListener('click', ()=>{
@@ -115,6 +123,9 @@ function checkDiet(foodDiets, restrictions){
 async function loadIngredients(){
     try{
         const response = await fetch("ingredients-with-possible-units.csv");
+        if(!response.ok){
+            throw new Error("Failed to load Ingredient CSV");
+        }
         const text = await response.text();
 
         const lines = text.split("\n");
@@ -146,6 +157,10 @@ async function addIngredient(){
         alert("Ingredient already added!");
         return;
     }
+    if(!/^[a-zA-Z\s]+$/.test(ingredient)){
+        alert("Ingredient must only contain letters");
+        return;
+    }
     
     const exists = await checkIngredientExists(ingredient);
     if(exists){
@@ -171,9 +186,9 @@ async function addIngredient(){
 }
 
 function removeIngredient(ingredient){
-    let ingredientDiv = document.getElementById(`${ingredient}Div`)
-    if(ingredientDiv){
-        ingredientDiv.remove();
+    let ingredientElement = document.getElementById(`${ingredient}Div`)
+    if(ingredientElement){
+        ingredientElement.remove();
         ingredientList.delete(ingredient);
     }
     else{
