@@ -24,7 +24,7 @@ function searchRecipes(){
         return;
     }
 
-    const apiUrl = `/recipes?query=${encodeURIComponent(query)}`;;
+    const apiUrl = `./api/recipes?query=${encodeURIComponent(query)}`;;
 
     infoBox.innerHTML = '<p>Searching for recipes...</p>';
 
