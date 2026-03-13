@@ -10,7 +10,6 @@ app.get("/api/recipes", async (req, res) => {
     const query = req.query.query;
     const apiKey = "90ec4731282a44a1892c06b66405ab8b";
     const url = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(query)}&number=20&addRecipeNutrition=true&apiKey=${apiKey}`;
-    
         try{
             const response = await fetch(url);
             const data = await response.json();
@@ -27,4 +26,4 @@ if(require.main === module){
     });
 }
 const handler = serverless(app);
-module.exports = {handler};
+module.exports = {app, handler};
