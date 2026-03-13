@@ -13,7 +13,7 @@ app.get("/api/recipes", async (req, res) => {
         return res.status(400).json({ error: "Missing search query" });
     }
 
-    const apiKey = FOOD_API_KEY;
+    const apiKey = process.env.FOOD_API_KEY;
     const url = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(query)}&number=20&addRecipeNutrition=true&apiKey=${apiKey}`;
         try{
             const response = await fetch(url);
