@@ -7,7 +7,6 @@ const ingredientInput = document.getElementById("ingredientInput");
 const ingredientButton = document.getElementById("ingredientButton");
 const validIngredients = new Set();
 const ingredientDiv = document.getElementById("ingredientList");
-const strictSearch = document.getElementById("strictSearch");
 let ingredientList = new Set();
 
 loadIngredients();
@@ -15,10 +14,12 @@ searchButton.addEventListener('click', searchRecipes);
 ingredientButton.addEventListener('click', addIngredient);
 
 
-
+//Function called when clicking the search button, begins search
 function searchRecipes(){
     const restrictions = dietaryRestrictions.value;
     const query = dietaryRestriction.value.trim();
+    
+    //Error checking
     if(!query){
         alert('Please enter a search term');
         return;
@@ -32,6 +33,7 @@ function searchRecipes(){
 
     infoBox.innerHTML = '<p>Searching for recipes...</p>';
 
+    //Fetches the API and initions the recipe adding
     fetch(apiUrl)
         .then(response => {
             if(!response.ok){
@@ -48,7 +50,7 @@ function searchRecipes(){
             data.results.forEach(recipe => {
                 addRecipes(restrictions, recipe);
             })
-            infoBox.textContent = "Recipes found! Click on a recipe for more information";
+            infoBox.innerHTML = '<div class = "success"> Recipes found! Click on a recipe for more information </div>';
         })
         .catch(error => {
             console.error('Error fetching recipes', error);
@@ -56,15 +58,18 @@ function searchRecipes(){
         })
     }
 
+//Function adds a recipe to the page
 function addRecipes(restrictions, recipe){
     const title = recipe.title;
     const image = recipe.image;
     const diets = recipe.diets;
 
+    //error checking
     if(!recipe.nutrition || !recipe.nutrition.ingredients){
         console.log(`Missing nutritional data for ${title}`)
         return;
     }
+
     const ingredients = new Set(
         recipe.nutrition.ingredients.map(i => i.name.toLowerCase())
     );
@@ -83,16 +88,17 @@ function addRecipes(restrictions, recipe){
                 console.log(recipe);
 
                  recipeDiv.addEventListener('click', ()=>{
-                infoBox.innerHTML = `<h3>${title}</h3>
-                <img src="${image}" alt="${title}" style="max-width: 100%;">
-                <p><strong>Diets:</strong> ${diets.join(', ') || 'None'}</p>
-                <p><strong>Ingredients:</strong> ${Array.from(ingredients).join(', ')}</p>`;
+                    infoBox.innerHTML = `<h3>${title}</h3>
+                    <img src="${image}" alt="${title}" style="max-width: 100%;">
+                    <p><strong>Diets:</strong> ${diets.join(', ') || 'None'}</p>
+                    <p><strong>Ingredients:</strong> ${Array.from(ingredients).join(', ')}</p>`;
+                    window.scroll(0, 0);
                 });
                 resultsDiv.appendChild(recipeDiv);
-            }
-            
+            }    
 }
 
+//Checks the ingredients match what's in the user's list
 function checkIngredientsMatch(foodIngredients){
     if(ingredientList.size != 0){
         for(const ingredient of ingredientList){
@@ -111,6 +117,7 @@ function checkIngredientsMatch(foodIngredients){
     return true;
 }
 
+//Checks that the food meets the user's dietary restrictions
 function checkDiet(foodDiets, restrictions){
     if(restrictions == "none"||foodDiets.includes(restrictions)){
         return true;
@@ -120,14 +127,15 @@ function checkDiet(foodDiets, restrictions){
     }
 }
 
+//Loads the ingredients CSV for checking
 async function loadIngredients(){
     try{
         const response = await fetch("ingredients-with-possible-units.csv");
         if(!response.ok){
             throw new Error("Failed to load Ingredient CSV");
         }
-        const text = await response.text();
 
+        const text = await response.text();
         const lines = text.split("\n");
 
         lines.forEach(line => {
@@ -141,14 +149,17 @@ async function loadIngredients(){
     }
 }
 
+//Checks that an ingredient is valid
 async function checkIngredientExists(ingredient){
     return validIngredients.has(ingredient.toLowerCase());
 }
 
+//Adds an ingredient to the ingredients list and set
 async function addIngredient(){
     let ingredient = ingredientInput.value.trim().toLowerCase();
     ingredientInput.value = "";
 
+    //error checking
     if(!ingredient){
         alert("Please enter an ingredient!");
         return;
@@ -162,6 +173,7 @@ async function addIngredient(){
         return;
     }
     
+    //Creates an ingredient element on the page
     const exists = await checkIngredientExists(ingredient);
     if(exists){
         const ingredientItem = document.createElement("div");
@@ -185,6 +197,7 @@ async function addIngredient(){
     console.log(ingredientList);
 }
 
+//Removes an ingredient from the page and the set
 function removeIngredient(ingredient){
     let ingredientElement = document.getElementById(`${ingredient}Div`)
     if(ingredientElement){
