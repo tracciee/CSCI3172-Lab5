@@ -180,3 +180,8 @@ function removeIngredient(ingredient){
         console.log("Attempted to remove not present ingredient");
     }
 }
+
+module.exports = {
+  checkDiet,
+  checkIngredientsMatch,
+};
