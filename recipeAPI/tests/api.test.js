@@ -2,6 +2,18 @@ const request = require("supertest");
 const { app } = require("../netlify/functions/api"); 
 
 describe("/recipes endpoint", () => {
+
+  beforeAll(() => {
+    process.env.FOOD_API_KEY = "mockAPIKey";
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ results: [] }),
+      })
+    );
+  });
+
   it("should respond with JSON", async () => {
     const res = await request(app).get("/api/recipes?query=chicken");
     expect(res.statusCode).toBe(200);
@@ -15,8 +27,8 @@ describe("/recipes endpoint", () => {
 
   it("returns error if query missing", async () => {
     const res = await request(app).get("/api/recipes"); 
-    expect(res.statusCode).toBe(200); 
-    expect(res.body).toHaveProperty("results");
+    expect(res.statusCode).toBe(400); 
+    expect(res.body).toHaveProperty("error");
   });
 
   it("results array is empty if no matches", async () => {
