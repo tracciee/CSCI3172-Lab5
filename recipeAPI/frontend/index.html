@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div class="container">
+<main class="container">
   <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
       <h1>Traccie's Recipe Finder!</h1>
   </header>
@@ -17,6 +17,7 @@
       <div class="border rounded p-4 h-100">
         <div class="search-container">
           <p>Search for a recipe here!</p>
+          <label for="searchInput">Recipe Search</label>
           <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search for recipes">
           <button id="searchButton" class="btn btn-primary w-100">Search</button>
         </div>
@@ -38,6 +39,7 @@
           <option value="ketogenic">Ketogenic</option>
         </select>
         <div class="ingredient-container">
+          <label for="ingredientInput">Add Ingredient</label>
           <input type="text" id="ingredientInput" class="form-control mb-2" placeholder="Add ingredients">
           <button id="ingredientButton" class="btn btn-secondary mb-2 w-100">
             Add Ingredient
@@ -47,15 +49,15 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div id="infoBox" class="border rounded p-4 h-100">
+      <div id="infoBox" aria-live="polite" class="border rounded p-4 h-100">
         <p>Input your search criteria and click search!</p>
       </div>
     </div>
   </div>
-      <div id="results" class="border rounded p-4 h-100">
+      <div id="results" aria-live="polite" class="border rounded p-4 h-100">
         <p>Recipes will show here!</p>
       </div>
-</div>
+    </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src = "js/script.js"></script>

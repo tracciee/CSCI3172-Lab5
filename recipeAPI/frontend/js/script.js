@@ -10,6 +10,8 @@ const ingredientDiv = document.getElementById("ingredientList");
 let ingredientList = new Set();
 
 loadIngredients();
+
+//Add event listeners to search and ingredient add buttons
 searchButton.addEventListener('click', searchRecipes);
 ingredientButton.addEventListener('click', addIngredient);
 
@@ -21,11 +23,11 @@ function searchRecipes(){
     
     //Error checking
     if(!query){
-        alert('Please enter a search term');
+        infoBox.innerHTML = '<div class="error">Please enter a search term.</div>';
         return;
     }
     if(!/^[a-zA-Z\s]+$/.test(query)){
-        alert("Search can only contain letters and spaces");
+        infoBox.innerHTML = '<div class="error">Search can only contain letters and spaces</div>';
         return;
     }
 
@@ -66,7 +68,7 @@ function addRecipes(restrictions, recipe){
 
     //error checking
     if(!recipe.nutrition || !recipe.nutrition.ingredients){
-        console.log(`Missing nutritional data for ${title}`)
+        console.warn(`Missing nutritional data for ${title}`)
         return;
     }
 
@@ -74,18 +76,15 @@ function addRecipes(restrictions, recipe){
         recipe.nutrition.ingredients.map(i => i.name.toLowerCase())
     );
 
-    console.log(restrictions);
-    console.log(diets);
 
     if(checkDiet(diets, restrictions) && checkIngredientsMatch(ingredients)){  
             console.log(recipe);
-            const recipeDiv = document.createElement('div');
-            recipeDiv.className = 'recipe';
+            const recipeDiv = document.createElement('button');
+            recipeDiv.className = 'recipe btn btn-light';
             recipeDiv.innerHTML = `
                 <h3>${title}</h3>
                 <img src="${image}" alt="${title}">
                 `;
-                console.log(recipe);
 
                  recipeDiv.addEventListener('click', ()=>{
                     infoBox.innerHTML = `<h3>${title}</h3>
@@ -145,7 +144,7 @@ async function loadIngredients(){
         console.log("Loaded ingredients");
     }
     catch(err){
-        console.log("Failed to load ingredients");
+        console.error("Failed to load ingredients", err);
     }
 }
 
@@ -161,15 +160,15 @@ async function addIngredient(){
 
     //error checking
     if(!ingredient){
-        alert("Please enter an ingredient!");
+        infoBox.innerHTML = '<div class="error">Please enter an ingredient!.</div>';
         return;
     }
     if(ingredientList.has(ingredient)){
-        alert("Ingredient already added!");
+        infoBox.innerHTML = '<div class="error">Ingredient Already Added!</div>';
         return;
     }
     if(!/^[a-zA-Z\s]+$/.test(ingredient)){
-        alert("Ingredient must only contain letters");
+        infoBox.innerHTML = '<div class="error">Ingredients can only contain letters!</div>';
         return;
     }
     
@@ -191,10 +190,9 @@ async function addIngredient(){
         ingredientList.add(ingredient);
     }
     else{
-        alert("Invalid ingredient!");
+        infoBox.innerHTML = '<div class="error">Invalid Ingredient!</div>';
         return;
     }
-    console.log(ingredientList);
 }
 
 //Removes an ingredient from the page and the set
